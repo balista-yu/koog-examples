@@ -1,0 +1,59 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: koog-examples
+  profiles:
+    active: ${APP_ENV:dev}
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+
+logging:
+  level:
+    root: ${LOG_LEVEL:INFO}
+    com.koog.examples: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+agent:
+  api-key: ${GOOGLE_API_KEY:your-api-key}
+  model: ${AGENT_MODEL:gemini-2.0-flash-001}
+  system-prompt: ${AGENT_SYSTEM_PROMPT:You are a helpful assistant. Please respond in Japanese.}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+  info:
+    env:
+      enabled: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+logging:
+  level:
+    root: WARN
+    com.koog.examples: INFO
