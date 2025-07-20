@@ -18,13 +18,20 @@ logging:
   level:
     root: ${LOG_LEVEL:INFO}
     com.koog.examples: DEBUG
+    ai.koog: TRACE
+    ai.koog.prompt.executor.clients.google: TRACE
   pattern:
     console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
 
 agent:
-  api-key: ${GOOGLE_API_KEY:your-api-key}
   model: ${AGENT_MODEL:gemini-2.0-flash-001}
   system-prompt: ${AGENT_SYSTEM_PROMPT:You are a helpful assistant. Please respond in Japanese.}
+
+ai:
+  koog:
+    google:
+      api-key: ${GOOGLE_API_KEY}
+      base-url: https://generativelanguage.googleapis.com
 
 management:
   endpoints:

@@ -31,7 +31,7 @@ dependencies {
     implementation(libs.spring.boot.starter.webflux)
     implementation(libs.spring.boot.starter.actuator)
     implementation(libs.koog.agents)
-    implementation(libs.koog.spring.boot.starter)
+    // implementation(libs.koog.spring.boot.starter) // 一時的に無効化
     implementation(libs.kotlin.logging.jvm)
     implementation(libs.kotlinx.serialization.json)
 
