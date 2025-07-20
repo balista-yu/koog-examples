@@ -25,7 +25,7 @@ class ChatAgent(
             temperature = 0.7,
         )
 
-        val result = agent.runAndGetResult(message)
+        val result = agent.run(message)
         logger.info { "Agent response: $result" }
 
         return result.orEmpty()

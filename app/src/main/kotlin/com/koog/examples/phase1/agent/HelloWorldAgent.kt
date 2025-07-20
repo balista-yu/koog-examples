@@ -28,7 +28,7 @@ class HelloWorldAgent(
         val userMessage = "Hello! How can you help me?"
         logger.info { "Sending message: $userMessage" }
 
-        val result = agent.runAndGetResult(userMessage)
+        val result = agent.run(userMessage)
         logger.info { "Agent response: $result" }
 
         return result.orEmpty()
