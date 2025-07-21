@@ -32,6 +32,6 @@ class HelloWorldAgent(
         val result = agent.run(userMessage)
         logger.info { "Agent response: $result" }
 
-        return result.orEmpty()
+        return result
     }
 }

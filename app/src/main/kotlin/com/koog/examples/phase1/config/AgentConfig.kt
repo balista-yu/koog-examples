@@ -12,10 +12,9 @@ data class AgentConfig(
 ) {
     val llmModel: LLModel
         get() = when (model) {
-            "gemini-1.5-flash" -> GoogleModels.Gemini1_5Flash
-            "gemini-1.5-pro" -> GoogleModels.Gemini1_5Pro
             "gemini-2.0-flash-001" -> GoogleModels.Gemini2_0Flash001
             "gemini-2.0-flash" -> GoogleModels.Gemini2_0Flash
-            else -> GoogleModels.Gemini1_5Flash
+            "gemini-2.5-flash" -> GoogleModels.Gemini2_5Flash
+            else -> GoogleModels.Gemini2_0Flash001
         }
 }

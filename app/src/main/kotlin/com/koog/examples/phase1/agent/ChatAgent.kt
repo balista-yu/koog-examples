@@ -28,7 +28,7 @@ class ChatAgent(
 
             val result = agent.run(message)
             logger.info { "Agent response: $result" }
-            result.orEmpty()
+            result
         } catch (e: Exception) {
             logger.error(e) { "Error processing message" }
             "Error: ${e.message}"
