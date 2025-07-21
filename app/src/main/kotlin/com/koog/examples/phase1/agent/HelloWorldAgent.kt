@@ -1,9 +1,8 @@
 package com.koog.examples.phase1.agent
 
 import ai.koog.agents.core.agent.AIAgent
-import ai.koog.prompt.executor.llms.all.simpleGoogleAIExecutor
+import ai.koog.prompt.executor.llms.SingleLLMPromptExecutor
 import com.koog.examples.phase1.config.AgentConfig
-import org.springframework.beans.factory.annotation.Value
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
 
@@ -12,7 +11,7 @@ private val logger = KotlinLogging.logger {}
 @Component
 class HelloWorldAgent(
     private val config: AgentConfig,
-    @Value("\${ai.koog.google.api-key}") private val apiKey: String
+    private val googleExecutor: SingleLLMPromptExecutor
 ) {
 
     suspend fun runExample(): String {
@@ -21,7 +20,7 @@ class HelloWorldAgent(
 
         // AIエージェントの作成
         val agent = AIAgent(
-            executor = simpleGoogleAIExecutor(apiKey),
+            executor = googleExecutor,
             systemPrompt = config.systemPrompt,
             llmModel = config.llmModel
         )

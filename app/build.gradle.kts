@@ -16,9 +16,9 @@ version = "0.0.1-SNAPSHOT"
 
 repositories {
     mavenCentral()
-    maven {
-        url = uri("https://packages.jetbrains.team/maven/p/grazi/grazie-platform-public")
-    }
+//    maven {
+//        url = uri("https://packages.jetbrains.team/maven/p/grazi/grazie-platform-public")
+//    }
 }
 
 dependencies {
@@ -30,8 +30,8 @@ dependencies {
     implementation(libs.spring.boot.starter.web)
     implementation(libs.spring.boot.starter.webflux)
     implementation(libs.spring.boot.starter.actuator)
-    implementation(libs.koog.agents)
-    // implementation(libs.koog.spring.boot.starter) // 一時的に無効化
+//    implementation(libs.koog.agents)
+    implementation(libs.koog.spring.boot.starter)
     implementation(libs.kotlin.logging.jvm)
     implementation(libs.kotlinx.serialization.json)
 
@@ -43,24 +43,33 @@ dependencies {
     developmentOnly(libs.spring.boot.devtools)
 }
 
-configurations.all {
-    resolutionStrategy {
-        eachDependency {
-            if (requested.group == "org.jetbrains.kotlinx" &&
-                requested.name.startsWith("kotlinx-coroutines")) {
-                useVersion("1.10.1")
-                because("Force all kotlinx-coroutines to 1.10.1 for Koog compatibility")
-            }
-        }
-
-        force(
-            "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1",
-            "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.1",
-            "org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.1",
-            "org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.10.1"
-        )
-    }
-}
+//configurations.all {
+//    resolutionStrategy {
+//        eachDependency {
+//            if (requested.group == "org.jetbrains.kotlinx" &&
+//                requested.name.startsWith("kotlinx-coroutines")) {
+//                useVersion("1.10.2")
+//                because("Force all kotlinx-coroutines to 1.10.2 for Koog compatibility")
+//            }
+//            if (requested.group == "org.jetbrains.kotlinx" &&
+//                requested.name == "kotlinx-serialization-json") {
+//                useVersion("1.6.3")
+//                because("Force kotlinx-serialization-json to 1.6.3 for Koog compatibility")
+//            }
+//        }
+//
+//        force(
+//            "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2",
+//            "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.2",
+//            "org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2",
+//            "org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.10.2",
+//            "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3",
+//            "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.3",
+//            "org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.3",
+//            "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.3"
+//        )
+//    }
+//}
 
 kotlin {
     jvmToolchain {

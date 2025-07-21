@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "agent")
 data class AgentConfig(
+    val apiKey: String = "",
     val model: String = "gemini-2.0-flash-001",
     val systemPrompt: String = "You are a helpful assistant. Please respond in Japanese."
 ) {
