@@ -27,9 +27,10 @@ koog-examples/
 ├── app/src/main/kotlin/com/koog/examples/
 │   ├── Application.kt                    # メインアプリケーション
 │   ├── phase1/
+│   │   ├── agent/                        # エージェント
+│   │   │   ├── ChatAgent.kt              
+│   │   │   └── HelloWorldAgent.kt
 │   │   ├── config/AgentConfig.kt         # エージェント設定 (data class)
-│   │   ├── basic/HelloWorldAgent.kt      # 基本エージェント
-│   │   ├── examples/ChatAgent.kt         # チャットエージェント
 │   │   ├── controller/AgentController.kt # REST API コントローラ
 │   │   └── dto/                          # データ転送オブジェクト
 │   │       ├── ChatRequest.kt
