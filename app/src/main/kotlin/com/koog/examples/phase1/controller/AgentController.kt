@@ -10,16 +10,12 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.ApplicationContext
 
 @RestController
 @RequestMapping("/api/agents")
 class AgentController(
     private val helloWorldAgent: HelloWorldAgent,
     private val chatAgent: ChatAgent,
-    @Autowired private val applicationContext: ApplicationContext
 ) {
 
     @GetMapping("/hello")
