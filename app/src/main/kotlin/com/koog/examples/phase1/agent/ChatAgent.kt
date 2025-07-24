@@ -1,7 +1,7 @@
 package com.koog.examples.phase1.agent
 
 import ai.koog.agents.core.agent.AIAgent
-import ai.koog.prompt.executor.llms.all.simpleGoogleAIExecutor
+import ai.koog.prompt.executor.llms.SingleLLMPromptExecutor
 import com.koog.examples.phase1.config.AgentConfig
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
@@ -10,7 +10,8 @@ private val logger = KotlinLogging.logger {}
 
 @Service
 class ChatAgent(
-    private val config: AgentConfig
+    private val config: AgentConfig,
+    private val googleExecutor: SingleLLMPromptExecutor
 ) {
 
     suspend fun processMessage(message: String): String {
@@ -20,7 +21,7 @@ class ChatAgent(
         return try {
             // AIエージェントの作成
             val agent = AIAgent(
-                executor = simpleGoogleAIExecutor(config.apiKey),
+                executor = googleExecutor,
                 systemPrompt = config.systemPrompt,
                 llmModel = config.llmModel,
                 temperature = 0.7

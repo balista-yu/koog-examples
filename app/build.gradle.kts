@@ -32,8 +32,6 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.spring.boot.starter.test)
-    testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.mockito.kotlin)
     testRuntimeOnly(libs.junit.platform.launcher)
 
     developmentOnly(libs.spring.boot.devtools)
@@ -47,6 +45,11 @@ configurations.all {
                 useVersion("1.10.2")
                 because("Force all kotlinx-coroutines to 1.10.2 for Koog compatibility")
             }
+            if (requested.group == "org.jetbrains.kotlinx" &&
+                requested.name.startsWith("kotlinx-serialization")) {
+                useVersion("1.8.1")
+                because("Force all kotlinx-serialization to 1.8.1 for Koog compatibility")
+            }
         }
 
         force(
@@ -54,6 +57,10 @@ configurations.all {
             "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.2",
             "org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2",
             "org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.10.2",
+            "org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1",
+            "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.1",
+            "org.jetbrains.kotlinx:kotlinx-serialization-core:1.8.1",
+            "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.8.1"
         )
     }
 }
