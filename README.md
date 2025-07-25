@@ -14,7 +14,7 @@ KoogフレームワークのSpring Boot統合サンプル集
 
 - **フレームワーク**: Spring Boot 3.5.3
 - **言語**: Kotlin 2.1.21
-- **AIライブラリ**: Koog Agents 0.2.1
+- **AIライブラリ**: Koog Agents 0.3.0
 - **LLMプロバイダー**: Google AI (Gemini 2.0 Flash)
 - **ビルドツール**: Gradle 8.11.1
 - **コンテナ**: Docker + Docker Compose

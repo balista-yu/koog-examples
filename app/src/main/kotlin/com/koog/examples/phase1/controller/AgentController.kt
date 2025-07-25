@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/agents")
 class AgentController(
     private val helloWorldAgent: HelloWorldAgent,
-    private val chatAgent: ChatAgent
+    private val chatAgent: ChatAgent,
 ) {
 
     @GetMapping("/hello")

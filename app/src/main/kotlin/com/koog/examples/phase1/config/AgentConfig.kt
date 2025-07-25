@@ -6,7 +6,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "agent")
 data class AgentConfig(
-    val apiKey: String = "",
     val model: String = "gemini-2.0-flash-001",
     val systemPrompt: String = "You are a helpful assistant. Please respond in Japanese."
 ) {
@@ -14,6 +13,7 @@ data class AgentConfig(
         get() = when (model) {
             "gemini-2.0-flash-001" -> GoogleModels.Gemini2_0Flash001
             "gemini-2.0-flash" -> GoogleModels.Gemini2_0Flash
+            "gemini-2.5-flash" -> GoogleModels.Gemini2_5Flash
             else -> GoogleModels.Gemini2_0Flash001
         }
 }

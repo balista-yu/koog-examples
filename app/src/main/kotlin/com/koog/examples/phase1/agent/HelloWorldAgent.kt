@@ -1,7 +1,7 @@
 package com.koog.examples.phase1.agent
 
 import ai.koog.agents.core.agent.AIAgent
-import ai.koog.prompt.executor.llms.all.simpleGoogleAIExecutor
+import ai.koog.prompt.executor.llms.SingleLLMPromptExecutor
 import com.koog.examples.phase1.config.AgentConfig
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
@@ -10,7 +10,8 @@ private val logger = KotlinLogging.logger {}
 
 @Component
 class HelloWorldAgent(
-    private val config: AgentConfig
+    private val config: AgentConfig,
+    private val googleExecutor: SingleLLMPromptExecutor
 ) {
 
     suspend fun runExample(): String {
@@ -19,7 +20,7 @@ class HelloWorldAgent(
 
         // AIエージェントの作成
         val agent = AIAgent(
-            executor = simpleGoogleAIExecutor(config.apiKey),
+            executor = googleExecutor,
             systemPrompt = config.systemPrompt,
             llmModel = config.llmModel
         )
@@ -28,9 +29,9 @@ class HelloWorldAgent(
         val userMessage = "Hello! How can you help me?"
         logger.info { "Sending message: $userMessage" }
 
-        val result = agent.runAndGetResult(userMessage)
+        val result = agent.run(userMessage)
         logger.info { "Agent response: $result" }
 
-        return result.orEmpty()
+        return result
     }
 }

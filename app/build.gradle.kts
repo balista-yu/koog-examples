@@ -16,27 +16,20 @@ version = "0.0.1-SNAPSHOT"
 
 repositories {
     mavenCentral()
-    maven {
-        url = uri("https://packages.jetbrains.team/maven/p/grazi/grazie-platform-public")
-    }
 }
 
 dependencies {
-    implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.10.1"))
+    implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.10.2"))
     implementation(libs.spring.boot.starter)
     implementation(libs.kotlin.reflect)
     implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.coroutines.reactor)
     implementation(libs.spring.boot.starter.web)
-    implementation(libs.spring.boot.starter.webflux)
     implementation(libs.spring.boot.starter.actuator)
-    implementation(libs.koog.agents)
+    implementation(libs.koog.spring.boot.starter)
     implementation(libs.kotlin.logging.jvm)
     implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.spring.boot.starter.test)
-    testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.mockito.kotlin)
     testRuntimeOnly(libs.junit.platform.launcher)
 
     developmentOnly(libs.spring.boot.devtools)
@@ -47,16 +40,25 @@ configurations.all {
         eachDependency {
             if (requested.group == "org.jetbrains.kotlinx" &&
                 requested.name.startsWith("kotlinx-coroutines")) {
-                useVersion("1.10.1")
-                because("Force all kotlinx-coroutines to 1.10.1 for Koog compatibility")
+                useVersion("1.10.2")
+                because("Force all kotlinx-coroutines to 1.10.2 for Koog compatibility")
+            }
+            if (requested.group == "org.jetbrains.kotlinx" &&
+                requested.name.startsWith("kotlinx-serialization")) {
+                useVersion("1.8.1")
+                because("Force all kotlinx-serialization to 1.8.1 for Koog compatibility")
             }
         }
 
         force(
-            "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1",
-            "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.1",
-            "org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.1",
-            "org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.10.1"
+            "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2",
+            "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.2",
+            "org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2",
+            "org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.10.2",
+            "org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1",
+            "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.1",
+            "org.jetbrains.kotlinx:kotlinx-serialization-core:1.8.1",
+            "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.8.1"
         )
     }
 }
