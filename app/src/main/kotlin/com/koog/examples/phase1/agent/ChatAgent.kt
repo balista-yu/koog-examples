@@ -4,11 +4,11 @@ import ai.koog.agents.core.agent.AIAgent
 import ai.koog.prompt.executor.llms.SingleLLMPromptExecutor
 import com.koog.examples.phase1.config.AgentConfig
 import mu.KotlinLogging
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 
 private val logger = KotlinLogging.logger {}
 
-@Service
+@Component
 class ChatAgent(
     private val config: AgentConfig,
     private val googleExecutor: SingleLLMPromptExecutor
