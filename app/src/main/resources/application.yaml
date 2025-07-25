@@ -9,11 +9,6 @@ spring:
     livereload:
       enabled: true
 
-ai:
-  koog:
-    google:
-      api-key: ${GOOGLE_API_KEY:your-api-key}
-
 logging:
   level:
     root: ${LOG_LEVEL:INFO}
