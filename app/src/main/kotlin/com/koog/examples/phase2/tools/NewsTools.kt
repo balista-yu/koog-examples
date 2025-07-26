@@ -59,7 +59,7 @@ class NewsTools(
         val encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8)
         val url = "${apiConfig.newsApiBaseUrl}/everything?" +
                 "q=$encodedQuery" +
-                "&language=ja" +
+                "&language=jp" +
                 "&sortBy=publishedAt" +
                 "&pageSize=$limit" +
                 "&apiKey=${apiConfig.newsApiKey}"
