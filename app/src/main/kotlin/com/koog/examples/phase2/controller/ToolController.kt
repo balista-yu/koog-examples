@@ -5,7 +5,6 @@ import com.koog.examples.phase2.config.ApiConfig
 import com.koog.examples.phase2.dto.ToolRequest
 import com.koog.examples.phase2.dto.ToolResponse
 import com.koog.examples.phase2.dto.ToolsInfoResponse
-import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
@@ -18,17 +17,6 @@ class ToolController(
     private val apiConfig: ApiConfig
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
-
-    @PostConstruct
-    fun init() {
-        try {
-            apiConfig.validateApiKeys()
-            logger.info("Phase2 ToolController initialized successfully")
-        } catch (e: Exception) {
-            logger.error("Failed to initialize ToolController: ${e.message}")
-            logger.error("Please ensure API keys are properly configured in environment variables")
-        }
-    }
 
     @PostMapping("/chat")
     fun chat(@RequestBody request: ToolRequest): ResponseEntity<ToolResponse> = runBlocking {
@@ -50,28 +38,5 @@ class ToolController(
 
         val toolsInfo = toolAgent.getAvailableTools()
         return ResponseEntity.ok(ToolsInfoResponse(availableTools = toolsInfo))
-    }
-
-    @GetMapping("/health")
-    fun health(): ResponseEntity<Map<String, Any>> {
-        val status = mutableMapOf<String, Any>()
-
-        status["status"] = "UP"
-        status["phase"] = "Phase2-01"
-
-        try {
-            apiConfig.validateApiKeys()
-            status["apiKeys"] = mapOf(
-                "openWeather" to "configured",
-                "newsApi" to "configured"
-            )
-        } catch (e: Exception) {
-            status["apiKeys"] = mapOf(
-                "status" to "missing",
-                "message" to e.message
-            )
-        }
-
-        return ResponseEntity.ok(status)
     }
 }

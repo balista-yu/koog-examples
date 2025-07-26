@@ -43,8 +43,7 @@ class HttpClientService(
 
             if (response.statusCode() !in 200..299) {
                 throw HttpException(
-                    "HTTP request failed with status ${response.statusCode()}: ${response.body()}",
-                    response.statusCode()
+                    "HTTP request failed with status ${response.statusCode()}: ${response.body()}"
                 )
             }
 
@@ -55,13 +54,12 @@ class HttpClientService(
             throw e
         } catch (e: Exception) {
             logger.error("Unexpected error during HTTP request", e)
-            throw HttpException("Failed to complete HTTP request: ${e.message}", 0, e)
+            throw HttpException("Failed to complete HTTP request: ${e.message}", e)
         }
     }
 
     class HttpException(
         message: String,
-        val statusCode: Int,
         cause: Throwable? = null
     ) : RuntimeException(message, cause)
 }

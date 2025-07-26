@@ -31,8 +31,6 @@ api:
   news-api-key: ${NEWS_API_KEY:}
   openweather-base-url: ${API_OPENWEATHER_BASE_URL:https://api.openweathermap.org/data/2.5}
   news-api-base-url: ${API_NEWS_API_BASE_URL:https://newsapi.org/v2}
-  request-timeout: ${API_REQUEST_TIMEOUT:30000}
-  max-retries: ${API_MAX_RETRIES:3}
 
 management:
   endpoints:
