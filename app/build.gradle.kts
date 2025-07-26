@@ -25,7 +25,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.spring.boot.starter.web)
     implementation(libs.spring.boot.starter.actuator)
-    implementation(libs.koog.spring.boot.starter)
+    implementation(libs.koog.agents)
     implementation(libs.kotlin.logging.jvm)
     implementation(libs.kotlinx.serialization.json)
 

@@ -21,7 +21,6 @@ junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools" }
 koog-agents = { module = "ai.koog:koog-agents", version.ref = "koog-agents" }
-koog-spring-boot-starter = { module = "ai.koog:koog-spring-boot-starter", version.ref = "koog-agents" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

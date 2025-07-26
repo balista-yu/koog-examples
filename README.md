@@ -2,14 +2,6 @@
 
 KoogフレームワークのSpring Boot統合サンプル集
 
-## 📋 サンプル一覧
-
-### Phase 1: 基礎編 ✅
-- [x] **HelloWorldAgent**: Google AI (Gemini) との基本連携
-- [x] **ChatAgent**: メッセージ処理とRESTful API
-- [x] **AgentConfig**: data classによる設定管理
-- [x] **REST Endpoints**: JSONレスポンス
-
 ## 🛠️ 技術構成
 
 - **フレームワーク**: Spring Boot 3.5.3
@@ -24,21 +16,16 @@ KoogフレームワークのSpring Boot統合サンプル集
 
 ```
 koog-examples/
-├── app/src/main/kotlin/com/koog/examples/
-│   ├── Application.kt                    # メインアプリケーション
-│   ├── phase1/
-│   │   ├── agent/                        # エージェント
-│   │   │   ├── ChatAgent.kt              
-│   │   │   └── HelloWorldAgent.kt
-│   │   ├── config/AgentConfig.kt         # エージェント設定 (data class)
-│   │   ├── controller/AgentController.kt # REST API コントローラ
-│   │   └── dto/                          # データ転送オブジェクト
-│   │       ├── ChatRequest.kt
-│   │       └── ChatResponse.kt
-│   └── resources/application.yaml        # Spring設定
-├── compose.yaml                          # Docker Compose設定
-├── Taskfile.yaml                         # Task定義
-└── README.md
+├── app/
+│   ├── src/main/kotlin/com/koog/examples/
+│   │   ├── Application.kt         # メインアプリケーション
+│   │   ├── phaseXX/               
+│   └── src/main/resources/
+│       └── application.yaml      # Spring設定
+├── compose.yaml                  # Docker Compose設定
+├── Taskfile.yaml                # Task定義
+├── .env.example                 # 環境変数サンプル
+└── README.md                    # このファイル
 ```
 
 ## 🚀 クイックスタート
@@ -56,12 +43,11 @@ cd koog-examples
 ### 3. 環境変数設定
 `.env`ファイルを作成：
 ```bash
-GOOGLE_API_KEY=your_google_api_key
-APP_ENV=dev
-LOG_LEVEL=INFO
-AGENT_MODEL=gemini-2.0-flash-001
-AGENT_SYSTEM_PROMPT="You are a helpful assistant. Please respond in Japanese."
+cp .env.example .env
+# 必要なAPIキーを設定
 ```
+
+詳細は各Phaseのドキュメントを参照してください。
 
 ### 4. 起動
 ```bash
@@ -73,43 +59,8 @@ docker-compose up -d
 ```
 
 ### 5. 動作確認
-```bash
-# ヘルスチェック
-curl http://localhost:8080/api/agents/health
 
-# HelloWorldAgent (基本的なAI応答)
-curl http://localhost:8080/api/agents/hello
-
-# ChatAgent (任意のメッセージ処理)
-curl -X POST http://localhost:8080/api/agents/chat \
-  -H "Content-Type: application/json" \
-  -d '{"message": "こんにちは"}'
-```
-
-## 📡 API エンドポイント
-
-### 基本エージェント
-- `GET /api/agents/health` - サービス状態確認
-- `GET /api/agents/hello` - HelloWorldAgent実行
-
-### チャットエージェント
-- `POST /api/agents/chat` - JSON形式のチャット (プログラム用)
-
-### リクエスト例
-```json
-{
-  "message": "Kotlinについて教えて"
-}
-```
-
-### レスポンス例
-```json
-{
-  "status": "success",
-  "message": "Kotlinについて教えて",
-  "response": "Kotlinは..."
-}
-```
+各Phaseには独自のエンドポイントがあります。詳細は各PhaseのREADMEを参照してください。
 
 ## 🔧 開発コマンド
 
