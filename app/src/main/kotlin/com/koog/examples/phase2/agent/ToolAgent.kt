@@ -5,21 +5,24 @@ import ai.koog.agents.core.tools.ToolRegistry
 import ai.koog.agents.core.tools.reflect.asTools
 import ai.koog.agents.ext.tool.AskUser
 import ai.koog.agents.ext.tool.SayToUser
-import ai.koog.prompt.executor.llms.SingleLLMPromptExecutor
+import ai.koog.prompt.executor.llms.all.simpleGoogleAIExecutor
 import com.koog.examples.phase2.config.Phase2Config
 import com.koog.examples.phase2.tools.NewsTools
 import com.koog.examples.phase2.tools.TextAnalysisTools
 import com.koog.examples.phase2.tools.WeatherTools
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import kotlin.jvm.java
 
 @Component
 class ToolAgent(
     private val config: Phase2Config,
-    private val googleExecutor: SingleLLMPromptExecutor,
     private val weatherTools: WeatherTools,
     private val newsTools: NewsTools,
-    private val textAnalysisTools: TextAnalysisTools
+    private val textAnalysisTools: TextAnalysisTools,
+    @Value("\${api.google-api-key}")
+    private val googleApiKey: String,
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
@@ -38,7 +41,7 @@ class ToolAgent(
     // ToolRegistryを使用してAIAgentを作成
     private fun createAgent() = AIAgent(
         llmModel = config.llmModel,
-        executor = googleExecutor,
+        executor = simpleGoogleAIExecutor(googleApiKey),
         systemPrompt = config.systemPrompt,
         temperature = config.temperature,
         toolRegistry = toolRegistry,

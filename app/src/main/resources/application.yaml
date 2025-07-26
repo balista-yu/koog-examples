@@ -9,13 +9,6 @@ spring:
     livereload:
       enabled: true
 
-# koog-spring-boot-starterを利用しているが、googleExecutorでAPIKeyがうまく渡されおらずOAUTH2の認証になってしまい403エラーになってしまう
-# ただ、この設定をかかないとビルドエラーになってしまうので、一旦記載している
-ai:
-  koog:
-    google:
-      api-key: ${GOOGLE_API_KEY:}
-
 logging:
   level:
     root: ${LOG_LEVEL:INFO}
@@ -33,6 +26,7 @@ phase2:
   temperature: ${PHASE2_TEMPERATURE:0.7}
 
 api:
+  google-api-key: ${GOOGLE_API_KEY:}
   openweather-api-key: ${OPENWEATHER_API_KEY:}
   news-api-key: ${NEWS_API_KEY:}
   openweather-base-url: ${API_OPENWEATHER_BASE_URL:https://api.openweathermap.org/data/2.5}
