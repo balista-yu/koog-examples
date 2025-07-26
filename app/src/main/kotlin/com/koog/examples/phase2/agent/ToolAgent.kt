@@ -145,6 +145,13 @@ class ToolAgent(
                 ParameterInfo("text", "string", "文字種別を分析するテキスト", true)
             )
         ))
+        toolsList.add(ToolInfo(
+            name = "analyzeUrl",
+            description = "URLからWebページのコンテンツを取得して分析します",
+            parameters = listOf(
+                ParameterInfo("url", "string", "分析するWebページのURL", true)
+            )
+        ))
 
         return toolsList
     }
