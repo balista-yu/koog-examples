@@ -4,7 +4,6 @@ import com.koog.examples.phase2.agent.ToolAgent
 
 data class ToolResponse(
     val response: String,
-    val toolsUsed: List<String>? = null
 )
 
 data class ToolsInfoResponse(
