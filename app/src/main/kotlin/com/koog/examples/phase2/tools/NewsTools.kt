@@ -99,7 +99,7 @@ class NewsTools(
                 val publishedAt = try {
                     val dateTime = LocalDateTime.parse(article.publishedAt, DateTimeFormatter.ISO_DATE_TIME)
                     dateTime.format(DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH:mm"))
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     article.publishedAt
                 }
                 appendLine("   公開日: $publishedAt")

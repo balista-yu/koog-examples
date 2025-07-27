@@ -3,7 +3,6 @@ package com.koog.examples.phase2.tools
 import ai.koog.agents.core.tools.annotations.LLMDescription
 import ai.koog.agents.core.tools.annotations.Tool
 import ai.koog.agents.core.tools.reflect.ToolSet
-import com.koog.examples.phase2.service.HttpClientService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.slf4j.LoggerFactory
@@ -16,9 +15,7 @@ import java.time.Duration
 
 @Component
 @LLMDescription("テキストを分析するツール群")
-class TextAnalysisTools(
-    private val httpClient: HttpClientService
-) : ToolSet {
+class TextAnalysisTools : ToolSet {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
@@ -141,44 +138,44 @@ class TextAnalysisTools(
     ): String {
         return try {
             logger.info("Fetching content from URL: $url")
-            
+
             // URLバリデーション
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
                 return "エラー: 有効なURLを入力してください（http://またはhttps://で始まる必要があります）"
             }
-            
+
             // HTTPリクエストでHTMLコンテンツを取得（直接HTTP通信を行う）
             val htmlContent = fetchHtmlContent(url)
-            
+
             // HTMLタグを除去してテキストのみを抽出
             val textContent = extractTextFromHtml(htmlContent)
-            
+
             // 抽出したテキストを分析
             val analysis = buildString {
                 appendLine("【URL分析結果】")
                 appendLine("🌐 URL: $url")
                 appendLine()
-                
+
                 // 基本的な統計情報
                 val basicAnalysis = analyzeText(textContent)
                 appendLine(basicAnalysis)
-                
+
                 // パターン抽出
                 val patterns = extractPatterns(textContent)
                 appendLine("\n$patterns")
-                
+
                 // 文字種別分析
                 val charTypes = analyzeCharacterTypes(textContent)
                 appendLine("\n$charTypes")
             }
-            
+
             analysis
         } catch (e: Exception) {
             logger.error("Failed to analyze URL: $url", e)
             "URLの分析に失敗しました: ${e.message}"
         }
     }
-    
+
     private fun extractTextFromHtml(html: String): String {
         // シンプルなHTMLタグ除去
         var text = html
@@ -197,30 +194,30 @@ class TextAnalysisTools(
             // 連続する空白を1つに
             .replace(Regex("\\s+"), " ")
             .trim()
-        
+
         return text
     }
-    
+
     private suspend fun fetchHtmlContent(url: String): String = withContext(Dispatchers.IO) {
         try {
             val httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
                 .followRedirects(HttpClient.Redirect.NORMAL)
                 .build()
-                
+
             val request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .timeout(Duration.ofSeconds(30))
                 .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
                 .GET()
                 .build()
-                
+
             val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString())
-            
+
             if (response.statusCode() !in 200..299) {
                 throw Exception("HTTP request failed with status ${response.statusCode()}")
             }
-            
+
             response.body()
         } catch (e: Exception) {
             logger.error("Failed to fetch HTML content from URL: $url", e)
