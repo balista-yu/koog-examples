@@ -8,8 +8,7 @@ import ai.koog.agents.ext.tool.SayToUser
 import ai.koog.prompt.executor.llms.all.simpleGoogleAIExecutor
 import com.koog.examples.phase2.config.Phase2Config
 import com.koog.examples.phase2.tools.NewsTools
-import com.koog.examples.phase2.tools.TextAnalysisTools
-import com.koog.examples.phase2.tools.WeatherTools
+import com.koog.examples.phase2.tools.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -20,8 +19,7 @@ class ToolAgent(
     private val config: Phase2Config,
     private val weatherTools: WeatherTools,
     private val newsTools: NewsTools,
-    private val textAnalysisTools: TextAnalysisTools,
-    @Value("\${api.google-api-key}")
+    @param:Value("\${api.google-api-key}")
     private val googleApiKey: String,
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -35,7 +33,12 @@ class ToolAgent(
         // カスタムツール（反射ベースのツールセット）
         tools(weatherTools.asTools())
         tools(newsTools.asTools())
-        tools(textAnalysisTools.asTools())
+        
+        // SimpleToolベースのツール
+        tool(UUIDGeneratorTool)
+        
+        // Toolクラスベースのツール
+        tool(Base64EncoderTool)
     }
 
     // ToolRegistryを使用してAIAgentを作成
@@ -63,97 +66,60 @@ class ToolAgent(
     }
 
     fun getAvailableTools(): List<ToolInfo> {
-        // 現在はToolRegistryから動的に取得するのが難しいので、
-        // 手動でツール情報を定義する
-        val toolsList = mutableListOf<ToolInfo>()
+        // ToolRegistryからツール情報を動的に取得
+        return toolRegistry.tools.map { tool ->
+            // descriptorから包括的なメタデータを取得
+            val descriptor = tool.descriptor
+            val toolName = descriptor.name
+            val toolDescription = descriptor.description
 
-        // ビルトインツール
-        toolsList.add(ToolInfo(
-            name = "askUser",
-            description = "ユーザーに質問をする",
-            parameters = listOf(
-                ParameterInfo("question", "string", "ユーザーへの質問", true)
-            )
-        ))
-        toolsList.add(ToolInfo(
-            name = "sayToUser",
-            description = "ユーザーに情報を伝える",
-            parameters = listOf(
-                ParameterInfo("message", "string", "ユーザーへのメッセージ", true)
-            )
-        ))
+            val parameters = when (toolName) {
+                "askUser" -> listOf(
+                    ParameterInfo("question", "string", "ユーザーへの質問", true)
+                )
+                "sayToUser" -> listOf(
+                    ParameterInfo("message", "string", "ユーザーへのメッセージ", true)
+                )
+                "getWeather" -> listOf(
+                    ParameterInfo("city", "string", "天気を取得したい都市名（日本語または英語）", true)
+                )
+                "getWeatherWithAdvice" -> listOf(
+                    ParameterInfo("city", "string", "天気を取得したい都市名", true)
+                )
+                "searchNews" -> listOf(
+                    ParameterInfo("query", "string", "検索キーワード", true),
+                    ParameterInfo("limit", "integer", "取得する記事数（1-20、デフォルト: 5）", false)
+                )
+                "getTopHeadlines" -> listOf(
+                    ParameterInfo("country", "string", "国コード（jp=日本、us=アメリカなど）", false),
+                    ParameterInfo(
+                        "category",
+                        "string",
+                        "カテゴリー（business, entertainment, general, health, science, sports, technology）",
+                        false
+                    ),
+                    ParameterInfo("limit", "integer", "取得する記事数（1-20）", false)
+                )
+                "uuid_generator" -> listOf(
+                    ParameterInfo("count", "integer", "生成するUUIDの個数（1-10、デフォルト: 1）", false),
+                    ParameterInfo("format", "string", "UUIDのフォーマット（standard, compact, uppercase）", false)
+                )
+                "base64_encoder" -> listOf(
+                    ParameterInfo("text", "string", "エンコード/デコードするテキスト", true),
+                    ParameterInfo("operation", "string", "実行する操作（encode または decode）", false),
+                    ParameterInfo("urlSafe", "boolean", "URLセーフなBase64を使用するか", false)
+                )
+                else -> emptyList()
+            }
 
-        // Weather Tools
-        toolsList.add(ToolInfo(
-            name = "getWeather",
-            description = "指定された都市の現在の天気情報を取得します",
-            parameters = listOf(
-                ParameterInfo("city", "string", "天気を取得したい都市名（日本語または英語）", true)
+            ToolInfo(
+                name = toolName,
+                description = toolDescription,
+                parameters = parameters
             )
-        ))
-        toolsList.add(ToolInfo(
-            name = "getWeatherWithAdvice",
-            description = "指定された都市の天気情報を取得し、アドバイスも提供します",
-            parameters = listOf(
-                ParameterInfo("city", "string", "天気を取得したい都市名", true)
-            )
-        ))
-
-        // News Tools
-        toolsList.add(ToolInfo(
-            name = "searchNews",
-            description = "キーワードに基づいてニュースを検索します",
-            parameters = listOf(
-                ParameterInfo("query", "string", "検索キーワード", true),
-                ParameterInfo("limit", "integer", "取得する記事数（1-20、デフォルト: 5）", false)
-            )
-        ))
-        toolsList.add(ToolInfo(
-            name = "getTopHeadlines",
-            description = "最新のヘッドラインニュースを取得します",
-            parameters = listOf(
-                ParameterInfo("country", "string", "国コード（jp=日本、us=アメリカなど）", false),
-                ParameterInfo(
-                    "category",
-                    "string",
-                    "カテゴリー（business, entertainment, general, health, science, sports, technology）",
-                    false
-                ),
-                ParameterInfo("limit", "integer", "取得する記事数（1-20）", false)
-            )
-        ))
-
-        // Text Analysis Tools
-        toolsList.add(ToolInfo(
-            name = "analyzeText",
-            description = "テキストの基本的な統計情報を分析します",
-            parameters = listOf(
-                ParameterInfo("text", "string", "分析するテキスト", true)
-            )
-        ))
-        toolsList.add(ToolInfo(
-            name = "extractPatterns",
-            description = "テキスト内の URL、メールアドレス、ハッシュタグなどを抽出します",
-            parameters = listOf(
-                ParameterInfo("text", "string", "パターンを抽出するテキスト", true)
-            )
-        ))
-        toolsList.add(ToolInfo(
-            name = "analyzeCharacterTypes",
-            description = "テキストの文字種別（ひらがな、カタカナ、漢字など）を分析します",
-            parameters = listOf(
-                ParameterInfo("text", "string", "文字種別を分析するテキスト", true)
-            )
-        ))
-        toolsList.add(ToolInfo(
-            name = "analyzeUrl",
-            description = "URLからWebページのコンテンツを取得して分析します",
-            parameters = listOf(
-                ParameterInfo("url", "string", "分析するWebページのURL", true)
-            )
-        ))
-
-        return toolsList
+        }.also { tools ->
+            logger.debug("Available tools: {}", tools.map { it.name })
+        }
     }
 
     data class ToolInfo(

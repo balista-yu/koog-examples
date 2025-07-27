@@ -1,25 +1,35 @@
-# Phase 2-01: カスタムツール作成（基本編）
+# Phase 2: ツール開発・統合編
 
 ## 概要
 
-このサンプルは、Koog 0.3.0でカスタムツールを作成し、エージェントに統合する方法を示します。
-実際の外部API（OpenWeatherMap、News API）と連携する実践的な例を通じて、ツール開発の基礎を学びます。
+このサンプルは、Koog 0.3.0の様々なツール実装方法を示します。
+3つの異なるアプローチ（ToolSet、SimpleTool、Tool）を使用して、実践的なツール開発を学びます。
 
 ## 実装されているツール
 
-### 1. WeatherTools
+### 1. アノテーションベース（ToolSet）
+
+#### WeatherTools
 - `getWeather`: 指定された都市の現在の天気情報を取得
 - `getWeatherWithAdvice`: 天気情報を取得し、アドバイスも提供
 
-### 2. NewsTools
+#### NewsTools
 - `searchNews`: キーワードに基づいてニュースを検索
 - `getTopHeadlines`: 最新のヘッドラインニュースを取得（国・カテゴリー別）
 
-### 3. TextAnalysisTools
-- `analyzeText`: テキストの基本的な統計情報を分析
-- `extractPatterns`: テキスト内のURL、メールアドレス、ハッシュタグなどを抽出
-- `analyzeCharacterTypes`: 文字種別（ひらがな、カタカナ、漢字など）を分析
-- `analyzeUrl`: URLからWebページのコンテンツを取得して分析 **NEW!**
+### 2. SimpleToolベース
+
+#### UUIDGeneratorTool
+- UUID（Universally Unique Identifier）を生成
+- 複数個の一括生成に対応
+- フォーマットオプション（標準、コンパクト、大文字）
+
+### 3. Toolクラスベース
+
+#### Base64EncoderTool
+- テキストのBase64エンコード/デコード
+- URLセーフなエンコーディングもサポート
+- 詳細な処理結果を返す
 
 ### 4. ビルトインツール
 - `askUser`: ユーザーに質問をする
@@ -90,18 +100,25 @@ curl -X POST http://localhost:8080/api/phase2/tools/chat \
   -d '{"message": "AIに関する最新ニュースを3件教えて"}'
 ```
 
-### テキスト分析
+### UUID生成
 ```bash
 curl -X POST http://localhost:8080/api/phase2/tools/chat \
   -H "Content-Type: application/json" \
-  -d '{"message": "次のテキストを分析して: Koog 0.3.0がリリースされました！詳細はhttps://example.comをご覧ください。#Koog #AI"}'
+  -d '{"message": "UUIDを3つ生成して"}'
 ```
 
-### URL分析（NEW!）
+### Base64エンコード
 ```bash
 curl -X POST http://localhost:8080/api/phase2/tools/chat \
   -H "Content-Type: application/json" \
-  -d '{"message": "次のURLを分析して: https://zenn.dev/kinakokyoryu/articles/16b80acb2bf525"}'
+  -d '{"message": "「Hello, World!」をBase64エンコードして"}'
+```
+
+### Base64デコード
+```bash
+curl -X POST http://localhost:8080/api/phase2/tools/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "SGVsbG8sIFdvcmxkIQ==をデコードして"}'
 ```
 
 ### 複合的な質問
@@ -132,33 +149,51 @@ phase2/
 ├── service/
 │   └── HttpClientService.kt # HTTP通信サービス
 ├── tools/
-│   ├── WeatherTools.kt      # 天気情報ツール群
-│   ├── NewsTools.kt         # ニュース検索ツール群
-│   └── TextAnalysisTools.kt # テキスト分析ツール群（URL分析機能付き）
+│   ├── WeatherTools.kt      # 天気情報ツール群（ToolSet）
+│   ├── NewsTools.kt         # ニュース検索ツール群（ToolSet）
+│   ├── SimpleTools.kt # SimpleToolの実装例
+│   └── ClassBasedTools.kt # Toolクラスの実装例
 └── README.md               # このファイル
 ```
 
 ## 技術的なポイント
 
-### 1. ツールの実装（Koog 0.3.0方式）
+### 1. ツール実装の3つのアプローチ
+
+#### ToolSet（アノテーションベース）
 - `ToolSet`インターフェースを実装してツールクラスを作成
 - `@Tool`アノテーションでメソッドをツールとしてマーク
 - `@LLMDescription`でツールやパラメータの説明を提供
-- Kotlinの型安全性を活用した実装
+- Spring DIとの統合が容易
+- **推奨**: 複数の関連ツールをグループ化する場合
+
+#### SimpleTool
+- `SimpleTool`抽象クラスを継承
+- `Args`データクラスで引数を定義
+- `doExecute()`メソッドでString型の結果を返す
+- **推奨**: 単一のシンプルなツールを実装する場合
+
+#### Tool（直接継承）
+- `Tool`抽象クラスを直接継承
+- カスタム結果型（`ToolResult`を実装）を定義可能
+- `toStringDefault()`メソッドで結果の文字列表現を提供
+- **推奨**: 複雑な結果型が必要な場合
 
 ### 2. ツールレジストリ
 - `ToolRegistry`でツールを管理
 - `asTools()`拡張関数でToolSetをレジストリに追加
+- `tool()`メソッドで個別のツールを追加
 - ビルトインツール（AskUser、SayToUser）も利用可能
 
-### 3. 非同期処理
+### 3. シリアライゼーション
+- Kotlin Serializationを使用
+- `@Serializable`アノテーションでデータクラスをマーク
+- `kotlinx.serialization.serializer<T>()`でシリアライザを取得
+
+### 4. 非同期処理
 - Kotlin Coroutinesを使用した非同期API呼び出し
 - `suspend`関数による効率的な並行処理
 - ツールメソッドも`suspend`関数として定義可能
-
-### 4. エラーハンドリング
-- API呼び出しの失敗に対する適切なエラー処理
-- ユーザーフレンドリーなエラーメッセージの返却
 
 ### 5. Spring Boot統合
 - `@Component`によるDI対応
@@ -203,8 +238,9 @@ IllegalStateException: OpenWeather API key is not configured
 
 ## 次のステップ
 
-Phase2-02では、より高度な外部API連携として以下を学習します：
-- GraphQL APIとの連携
-- 認証が必要なAPIの扱い
-- Webhookの実装
-- リアルタイムデータの処理
+Phase3では、以下を学習します：
+- エージェントの状態管理
+- 永続化（ローカルディスク、S3、データベース）
+- チェックポイント機能とロールバック
+- ベクトルストレージによるドキュメント検索
+- 履歴圧縮とメモリ最適化

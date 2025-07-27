@@ -12,7 +12,7 @@ private val logger = KotlinLogging.logger {}
 @Component
 class ChatAgent(
     private val config: AgentConfig,
-    @Value("\${api.google-api-key}")
+    @param:Value("\${api.google-api-key}")
     private val googleApiKey: String,
 ) {
 
