@@ -8,8 +8,7 @@ import ai.koog.agents.ext.tool.SayToUser
 import ai.koog.prompt.executor.llms.all.simpleGoogleAIExecutor
 import com.koog.examples.phase2.config.Phase2Config
 import com.koog.examples.phase2.tools.NewsTools
-import com.koog.examples.phase2.tools.TextAnalysisTools
-import com.koog.examples.phase2.tools.WeatherTools
+import com.koog.examples.phase2.tools.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -20,7 +19,6 @@ class ToolAgent(
     private val config: Phase2Config,
     private val weatherTools: WeatherTools,
     private val newsTools: NewsTools,
-    private val textAnalysisTools: TextAnalysisTools,
     @param:Value("\${api.google-api-key}")
     private val googleApiKey: String,
 ) {
@@ -35,7 +33,12 @@ class ToolAgent(
         // カスタムツール（反射ベースのツールセット）
         tools(weatherTools.asTools())
         tools(newsTools.asTools())
-        tools(textAnalysisTools.asTools())
+        
+        // SimpleToolベースのツール
+        tool(UUIDGeneratorTool)
+        
+        // Toolクラスベースのツール
+        tool(Base64EncoderTool)
     }
 
     // ToolRegistryを使用してAIAgentを作成
@@ -97,17 +100,14 @@ class ToolAgent(
                     ),
                     ParameterInfo("limit", "integer", "取得する記事数（1-20）", false)
                 )
-                "analyzeText" -> listOf(
-                    ParameterInfo("text", "string", "分析するテキスト", true)
+                "uuid_generator" -> listOf(
+                    ParameterInfo("count", "integer", "生成するUUIDの個数（1-10、デフォルト: 1）", false),
+                    ParameterInfo("format", "string", "UUIDのフォーマット（standard, compact, uppercase）", false)
                 )
-                "extractPatterns" -> listOf(
-                    ParameterInfo("text", "string", "パターンを抽出するテキスト", true)
-                )
-                "analyzeCharacterTypes" -> listOf(
-                    ParameterInfo("text", "string", "文字種別を分析するテキスト", true)
-                )
-                "analyzeUrl" -> listOf(
-                    ParameterInfo("url", "string", "分析するWebページのURL", true)
+                "base64_encoder" -> listOf(
+                    ParameterInfo("text", "string", "エンコード/デコードするテキスト", true),
+                    ParameterInfo("operation", "string", "実行する操作（encode または decode）", false),
+                    ParameterInfo("urlSafe", "boolean", "URLセーフなBase64を使用するか", false)
                 )
                 else -> emptyList()
             }
