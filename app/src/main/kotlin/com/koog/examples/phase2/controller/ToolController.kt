@@ -1,7 +1,6 @@
 package com.koog.examples.phase2.controller
 
 import com.koog.examples.phase2.agent.ToolAgent
-import com.koog.examples.phase2.config.ApiConfig
 import com.koog.examples.phase2.dto.ToolRequest
 import com.koog.examples.phase2.dto.ToolResponse
 import com.koog.examples.phase2.dto.ToolsInfoResponse
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/phase2/tools")
 class ToolController(
     private val toolAgent: ToolAgent,
-    private val apiConfig: ApiConfig
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
