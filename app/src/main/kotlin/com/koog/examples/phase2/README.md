@@ -90,7 +90,7 @@ GET /api/phase2/tools/info
 ```bash
 curl -X POST http://localhost:8080/api/phase2/tools/chat \
   -H "Content-Type: application/json" \
-  -d '{"message": "東京の現在の天気を教えてください"}'
+  -d '{"message": "東京都の現在の天気を教えてください"}'
 ```
 
 ### ニュース検索
