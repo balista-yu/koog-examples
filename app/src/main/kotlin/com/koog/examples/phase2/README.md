@@ -235,12 +235,3 @@ IllegalStateException: OpenWeather API key is not configured
 ### 日本語が文字化けする場合
 - リクエストのContent-Typeが`application/json; charset=UTF-8`になっているか確認
 - レスポンスの文字コードを確認
-
-## 次のステップ
-
-Phase3では、以下を学習します：
-- エージェントの状態管理
-- 永続化（ローカルディスク、S3、データベース）
-- チェックポイント機能とロールバック
-- ベクトルストレージによるドキュメント検索
-- 履歴圧縮とメモリ最適化
