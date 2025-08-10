@@ -60,11 +60,7 @@ APIキーの取得方法：
 ### 2. アプリケーションの起動
 
 ```bash
-# Dockerを使用する場合
 task up
-
-# または直接実行
-./gradlew bootRun
 ```
 
 ## API エンドポイント
@@ -77,11 +73,6 @@ Content-Type: application/json
 {
   "message": "東京の天気を教えて"
 }
-```
-
-### ツール情報の取得
-```bash
-GET /api/phase2/tools/info
 ```
 
 ## 使用例
@@ -142,7 +133,6 @@ phase2/
 ├── dto/
 │   ├── ToolRequest.kt       # リクエストDTO
 │   ├── ToolResponse.kt      # レスポンスDTO
-│   ├── ToolsInfoResponse.kt # ツール情報レスポンスDTO
 │   └── api/                 # 外部API用DTO
 │       ├── WeatherApiResponse.kt
 │       └── NewsApiResponse.kt
@@ -155,69 +145,6 @@ phase2/
 │   └── ClassBasedTools.kt # Toolクラスの実装例
 └── README.md               # このファイル
 ```
-
-## 技術的なポイント
-
-### 1. ツール実装の3つのアプローチ
-
-#### ToolSet（アノテーションベース）
-- `ToolSet`インターフェースを実装してツールクラスを作成
-- `@Tool`アノテーションでメソッドをツールとしてマーク
-- `@LLMDescription`でツールやパラメータの説明を提供
-- Spring DIとの統合が容易
-- **推奨**: 複数の関連ツールをグループ化する場合
-
-#### SimpleTool
-- `SimpleTool`抽象クラスを継承
-- `Args`データクラスで引数を定義
-- `doExecute()`メソッドでString型の結果を返す
-- **推奨**: 単一のシンプルなツールを実装する場合
-
-#### Tool（直接継承）
-- `Tool`抽象クラスを直接継承
-- カスタム結果型（`ToolResult`を実装）を定義可能
-- `toStringDefault()`メソッドで結果の文字列表現を提供
-- **推奨**: 複雑な結果型が必要な場合
-
-### 2. ツールレジストリ
-- `ToolRegistry`でツールを管理
-- `asTools()`拡張関数でToolSetをレジストリに追加
-- `tool()`メソッドで個別のツールを追加
-- ビルトインツール（AskUser、SayToUser）も利用可能
-
-### 3. シリアライゼーション
-- Kotlin Serializationを使用
-- `@Serializable`アノテーションでデータクラスをマーク
-- `kotlinx.serialization.serializer<T>()`でシリアライザを取得
-
-### 4. 非同期処理
-- Kotlin Coroutinesを使用した非同期API呼び出し
-- `suspend`関数による効率的な並行処理
-- ツールメソッドも`suspend`関数として定義可能
-
-### 5. Spring Boot統合
-- `@Component`によるDI対応
-- 設定の外部化とバリデーション
-- Google AI Executorの使用（`simpleGoogleAIExecutor`）
-
-## 拡張のアイデア
-
-1. **キャッシュ機能の追加**
-   - 同じクエリに対するAPI呼び出しの削減
-   - Redisなどを使用した分散キャッシュ
-
-2. **レート制限の実装**
-   - API利用制限への対応
-   - ユーザーごとの利用制限
-
-3. **新しいツールの追加**
-   - 翻訳ツール（DeepL API）
-   - 画像生成ツール（DALL-E API）
-   - データベース検索ツール
-
-4. **ツールの組み合わせ**
-   - 複数ツールの結果を統合した高度な応答
-   - ツール間の依存関係の管理
 
 ## トラブルシューティング
 

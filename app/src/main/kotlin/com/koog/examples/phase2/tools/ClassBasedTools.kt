@@ -9,10 +9,6 @@ import ai.koog.agents.core.tools.ToolResult
 import kotlinx.serialization.Serializable
 import java.util.Base64
 
-/**
- * Tool抽象クラスを直接継承したクラスベースのツール実装例
- * より柔軟な実装が必要な場合に使用
- */
 object Base64EncoderTool : Tool<Base64EncoderTool.Args, Base64EncoderTool.Result>() {
 
     @Serializable
@@ -47,7 +43,6 @@ object Base64EncoderTool : Tool<Base64EncoderTool.Args, Base64EncoderTool.Result
     }
 
     override val argsSerializer = kotlinx.serialization.serializer<Args>()
-    // resultSerializerは不要（Toolクラスには存在しない）
 
     override val descriptor = ToolDescriptor(
         name = "base64_encoder",
@@ -106,12 +101,10 @@ object Base64EncoderTool : Tool<Base64EncoderTool.Args, Base64EncoderTool.Result
                 processedLength = processedText.length
             )
         } catch (e: IllegalArgumentException) {
-            // Base64デコードエラーなど
             throw Exception("Base64処理エラー: ${e.message}")
         }
     }
 
-    // Toolクラスの場合、結果を文字列に変換するメソッドをオーバーライド
     override fun encodeResultToString(result: Result): String {
         return result.toStringDefault()
     }

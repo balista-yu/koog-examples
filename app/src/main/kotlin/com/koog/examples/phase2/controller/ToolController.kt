@@ -3,7 +3,6 @@ package com.koog.examples.phase2.controller
 import com.koog.examples.phase2.agent.ToolAgent
 import com.koog.examples.phase2.dto.ToolRequest
 import com.koog.examples.phase2.dto.ToolResponse
-import com.koog.examples.phase2.dto.ToolsInfoResponse
 import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
@@ -28,13 +27,5 @@ class ToolController(
             ResponseEntity.internalServerError()
                 .body(ToolResponse(response = "エラーが発生しました: ${e.message}"))
         }
-    }
-
-    @GetMapping("/info")
-    fun getToolsInfo(): ResponseEntity<ToolsInfoResponse> {
-        logger.info("Fetching available tools information")
-
-        val toolsInfo = toolAgent.getAvailableTools()
-        return ResponseEntity.ok(ToolsInfoResponse(availableTools = toolsInfo))
     }
 }

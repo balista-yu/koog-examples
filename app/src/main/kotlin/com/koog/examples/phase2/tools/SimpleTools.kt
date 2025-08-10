@@ -36,16 +36,13 @@ object UUIDGeneratorTool : SimpleTool<UUIDGeneratorTool.Args>() {
 
     override suspend fun doExecute(args: Args): String {
         return try {
-            // 個数の検証
             val count = args.count.coerceIn(1, 10)
 
-            // UUIDの生成
             val uuids = List(count) {
                 val uuid = UUID.randomUUID().toString()
                 formatUUID(uuid, args.format)
             }
 
-            // 結果の整形
             buildString {
                 appendLine("【UUID生成結果】")
                 appendLine("生成数: $count")
