@@ -28,6 +28,7 @@ dependencies {
     implementation(libs.koog.agents)
     implementation(libs.kotlin.logging.jvm)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.coroutines.reactor)
 
     testImplementation(libs.spring.boot.starter.test)
     testRuntimeOnly(libs.junit.platform.launcher)
