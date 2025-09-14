@@ -5,7 +5,7 @@ spring-boot-management = "1.1.7"
 kotlin-logging-jvm = "3.0.5"
 kotlinx-serialization-json="1.8.1"
 kotlinx-coroutines = "1.10.2"
-koog-agents = "0.3.0"
+koog-agents = "0.4.1"
 
 [libraries]
 spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter" }
