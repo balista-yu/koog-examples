@@ -59,7 +59,7 @@ class KoogEventHandlerAgent(
             logger.info { "Starting detailed event tracking for session: $sessionId" }
 
             var toolCallCount = 0
-            var llmCallCount = 0
+            val llmCallCount = 0
 
             val agent = AIAgent(
                 llmModel = GoogleModels.Gemini2_0Flash001,

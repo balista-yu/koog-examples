@@ -51,7 +51,6 @@ class SimpleEventAgent(
                 toolRegistry = toolRegistry,
                 maxIterations = config.maxIterations
             ) {
-                // Koog標準のEventHandler機能
                 handleEvents {
                     onToolCall { eventContext ->
                         val eventMsg = "${LocalDateTime.now()}: Tool called: ${eventContext.tool.name}"
@@ -59,7 +58,7 @@ class SimpleEventAgent(
                         logger.info { eventMsg }
                     }
 
-                    onAgentFinished { eventContext ->
+                    onAgentFinished { _ ->
                         val eventMsg = "${LocalDateTime.now()}: Agent finished"
                         events.add(eventMsg)
                         logger.info { eventMsg }
