@@ -25,11 +25,6 @@ class ApidogMcpService(
 
     @PostConstruct
     fun init() {
-        if (apidogAccessToken.isBlank() || apidogProjectId.isBlank()) {
-            logger.warn { "Apidog MCP Server not configured. Skipping initialization." }
-            return
-        }
-
         try {
             logger.info { "Starting Apidog MCP Server..." }
 
