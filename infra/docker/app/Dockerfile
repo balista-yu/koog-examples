@@ -2,11 +2,20 @@ FROM eclipse-temurin:21-jdk AS local
 WORKDIR /app
 COPY /app /app
 ENV TZ=Asia/Tokyo
+RUN apt-get update && \
+    apt-get install -y curl && \
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
+    apt-get install -y nodejs && \
+    rm -rf /var/lib/apt/lists/*
 RUN chmod +x gradlew && ./gradlew clean getDependencies -x test --stacktrace
 
 FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
-RUN apt-get update && apt-get install -y unzip && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    apt-get install -y unzip curl && \
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
+    apt-get install -y nodejs && \
+    rm -rf /var/lib/apt/lists/*
 COPY /app/gradlew /app/
 COPY /app/gradle /app/gradle
 COPY /app/*.gradle.kts /app/
@@ -16,6 +25,11 @@ RUN chmod +x gradlew && ./gradlew build -x test --daemon --parallel --build-cach
 
 FROM eclipse-temurin:21-jre AS production
 ENV TZ=Asia/Tokyo
+RUN apt-get update && \
+    apt-get install -y curl && \
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
+    apt-get install -y nodejs && \
+    rm -rf /var/lib/apt/lists/*
 RUN useradd -m -u 1001 spring
 WORKDIR /app
 COPY --from=build /app/build/libs/*.jar app.jar

@@ -32,6 +32,12 @@ api:
   openweather-base-url: ${API_OPENWEATHER_BASE_URL:https://api.openweathermap.org/data/2.5}
   news-api-base-url: ${API_NEWS_API_BASE_URL:https://newsapi.org/v2}
 
+apidog:
+  access:
+    token: ${APIDOG_ACCESS_TOKEN:}
+  project:
+    id: ${APIDOG_PROJECT_ID:}
+
 management:
   endpoints:
     web:
