@@ -6,9 +6,9 @@ KoogフレームワークのSpring Boot統合サンプル集
 
 - **フレームワーク**: Spring Boot 3.5.3
 - **言語**: Kotlin 2.1.21
-- **AIライブラリ**: Koog Agents 0.3.0
+- **AIライブラリ**: Koog Agents 0.4.1
 - **LLMプロバイダー**: Google AI (Gemini 2.0 Flash)
-- **ビルドツール**: Gradle 8.11.1
+- **ビルドツール**: Gradle 8.12.1
 - **コンテナ**: Docker + Docker Compose
 - **Java**: OpenJDK 21
 
@@ -19,7 +19,10 @@ koog-examples/
 ├── app/
 │   ├── src/main/kotlin/com/koog/examples/
 │   │   ├── Application.kt         # メインアプリケーション
-│   │   ├── phaseXX/               
+│   │   ├── phase1/               # 基本的なKoogエージェント
+│   │   ├── phase2/               # ツール開発・統合
+│   │   ├── phase3/               # エージェント戦略（未実装）
+│   │   └── phase4/               # MCP統合（Apidog）
 │   └── src/main/resources/
 │       └── application.yaml      # Spring設定
 ├── compose.yaml                  # Docker Compose設定
@@ -44,10 +47,14 @@ cd koog-examples
 `.env`ファイルを作成：
 ```bash
 cp .env.example .env
-# 必要なAPIキーを設定
 ```
 
-詳細は各Phaseのドキュメントを参照してください。
+必要な環境変数：
+- `GOOGLE_API_KEY` - Google AI (Gemini) APIキー（必須）
+- `OPENWEATHER_API_KEY` - OpenWeatherMap APIキー（Phase2用）
+- `NEWS_API_KEY` - News APIキー（Phase2用）
+- `APIDOG_ACCESS_TOKEN` - Apidog アクセストークン（Phase4用）
+- `APIDOG_PROJECT_ID` - Apidog プロジェクトID（Phase4用）
 
 ### 4. 起動
 ```bash
@@ -60,7 +67,19 @@ docker-compose up -d
 
 ### 5. 動作確認
 
-各Phaseには独自のエンドポイントがあります。詳細は各PhaseのREADMEを参照してください。
+#### Phase 1: 基本的なKoogエージェント
+- http://localhost:8080/phase1/hello - シンプルなエージェント
+- http://localhost:8080/phase1/chat - チャットエージェント
+
+#### Phase 2: ツール開発・統合
+- http://localhost:8080/phase2/weather/{city} - 天気情報取得
+- http://localhost:8080/phase2/news - ニュース取得
+- http://localhost:8080/phase2/execute - ツール実行
+
+#### Phase 4: MCP統合（Apidog）
+- http://localhost:8080/phase4/apidog/status - ステータス確認
+- http://localhost:8080/phase4/apidog/query - API質問応答
+- http://localhost:8080/phase4/apidog/examples - サンプルクエリ
 
 ## 🔧 開発コマンド
 
