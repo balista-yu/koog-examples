@@ -33,9 +33,9 @@ class ApidogMcpService(
                 "--project=$apidogProjectId"
             ).apply {
                 environment()["APIDOG_ACCESS_TOKEN"] = apidogAccessToken
+                redirectError(ProcessBuilder.Redirect.DISCARD)
             }.start()
 
-            // Wait for the server to start
             Thread.sleep(2000)
             logger.info { "Connecting to Apidog MCP Server..." }
 
