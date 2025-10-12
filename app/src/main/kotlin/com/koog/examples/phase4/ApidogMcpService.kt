@@ -109,31 +109,5 @@ class ApidogMcpService(
         }
     }
 
-    fun testApiEndpoint(endpoint: String, method: String, body: String?): Map<String, Any> {
-        if (agent == null) {
-            return mapOf("error" to "Apidog MCP Server is not configured")
-        }
-
-        return try {
-            val query = buildString {
-                append("Test the API endpoint: $endpoint with method: $method")
-                body?.let { append(" and body: $it") }
-            }
-
-            val result = runBlocking {
-                agent!!.run(query)
-            }
-
-            mapOf(
-                "endpoint" to endpoint,
-                "method" to method,
-                "result" to result
-            )
-        } catch (e: Exception) {
-            logger.error(e) { "Failed to test API endpoint: $endpoint" }
-            mapOf("error" to "Failed to test endpoint: ${e.message}")
-        }
-    }
-
     fun isConfigured(): Boolean = agent != null
 }

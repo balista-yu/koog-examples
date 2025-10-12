@@ -12,19 +12,6 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
-/**
- * Chrome DevTools MCP統合サービス
- *
- * Chrome DevTools MCPサーバーを起動し、AIエージェントからブラウザの
- * 開発者ツールを操作できるようにします。
- *
- * 主な機能:
- * - パフォーマンス分析
- * - ネットワークエラー診断
- * - ユーザー行動シミュレーション
- * - スタイル/レイアウト検証
- * - 自動パフォーマンス監査
- */
 @Service
 class ChromeDevToolsMcpService(
     @Value("\${api.google-api-key}") private val googleApiKey: String

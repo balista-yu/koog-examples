@@ -3,28 +3,17 @@ package com.koog.examples.phase4
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
-/**
- * Chrome DevTools MCP REST APIコントローラー
- *
- * Chrome DevTools MCPサービスへのHTTPエンドポイントを提供します。
- */
 @RestController
 @RequestMapping("/phase4/chrome-devtools")
 class ChromeDevToolsMcpController(
     private val chromeDevToolsService: ChromeDevToolsMcpService
 ) {
 
-    /**
-     * サービスの状態を確認
-     */
     @GetMapping("/status")
     fun getStatus(): ResponseEntity<Map<String, Any>> {
         return ResponseEntity.ok(chromeDevToolsService.getStatus())
     }
 
-    /**
-     * 利用可能なツールの一覧を取得
-     */
     @GetMapping("/tools")
     fun getTools(): ResponseEntity<Map<String, Any>> {
         return ResponseEntity.ok(
@@ -35,16 +24,6 @@ class ChromeDevToolsMcpController(
         )
     }
 
-    /**
-     * AIエージェントを使用してタスクを実行
-     *
-     * Example:
-     * ```
-     * curl -X POST http://localhost:8080/phase4/chrome-devtools/execute \
-     *   -H "Content-Type: application/json" \
-     *   -d '{"task": "https://example.comにアクセスしてスクリーンショットを撮って"}'
-     * ```
-     */
     @PostMapping("/execute")
     fun executeTask(@RequestBody request: TaskRequest): ResponseEntity<Map<String, Any>> {
         if (!chromeDevToolsService.isReady()) {
@@ -62,9 +41,6 @@ class ChromeDevToolsMcpController(
         )
     }
 
-    /**
-     * サンプルタスクの一覧を取得
-     */
     @GetMapping("/examples")
     fun getExamples(): ResponseEntity<Map<String, Any>> {
         val examples = listOf(
