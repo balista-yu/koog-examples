@@ -1,0 +1,86 @@
+package com.koog.examples.phase4.controller
+
+import com.koog.examples.phase4.dto.TaskRequest
+import com.koog.examples.phase4.service.ChromeDevToolsMcpService
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
+
+@RestController
+@RequestMapping("/phase4/chrome-devtools")
+class ChromeDevToolsMcpController(
+    private val chromeDevToolsService: ChromeDevToolsMcpService
+) {
+
+    @GetMapping("/status")
+    fun getStatus(): ResponseEntity<Map<String, Any>> {
+        return ResponseEntity.ok(chromeDevToolsService.getStatus())
+    }
+
+    @GetMapping("/tools")
+    fun getTools(): ResponseEntity<Map<String, Any>> {
+        return ResponseEntity.ok(
+            mapOf(
+                "tools" to chromeDevToolsService.getAvailableTools(),
+                "count" to chromeDevToolsService.getAvailableTools().size
+            )
+        )
+    }
+
+    @PostMapping("/execute")
+    fun executeTask(@RequestBody request: TaskRequest): ResponseEntity<Map<String, Any>> {
+        if (!chromeDevToolsService.isReady()) {
+            return ResponseEntity.status(503).body(
+                mapOf("error" to "Chrome DevTools MCP Service is not ready")
+            )
+        }
+
+        val result = chromeDevToolsService.executeTask(request.task)
+        return ResponseEntity.ok(
+            mapOf(
+                "task" to request.task,
+                "result" to result
+            )
+        )
+    }
+
+    @GetMapping("/examples")
+    fun getExamples(): ResponseEntity<Map<String, Any>> {
+        val examples = listOf(
+            mapOf(
+                "name" to "スクリーンショット撮影",
+                "task" to "https://example.comにアクセスしてスクリーンショットを撮ってください"
+            ),
+            mapOf(
+                "name" to "パフォーマンス分析",
+                "task" to "https://example.comのページ読み込みパフォーマンスを分析してください"
+            ),
+            mapOf(
+                "name" to "フォーム入力",
+                "task" to "https://example.comにアクセスして、検索フォームに「test」と入力してください"
+            ),
+            mapOf(
+                "name" to "ネットワークリクエスト監視",
+                "task" to "https://example.comにアクセスして、すべてのネットワークリクエストをリストアップしてください"
+            ),
+            mapOf(
+                "name" to "コンソールログ確認",
+                "task" to "https://example.comにアクセスして、コンソールにエラーがないか確認してください"
+            ),
+            mapOf(
+                "name" to "JavaScriptの実行",
+                "task" to "https://example.comにアクセスして、document.titleを取得してください"
+            ),
+            mapOf(
+                "name" to "レスポンシブ検証",
+                "task" to "https://example.comをモバイルサイズ(375x667)でスクリーンショットを撮ってください"
+            )
+        )
+
+        return ResponseEntity.ok(
+            mapOf(
+                "examples" to examples,
+                "usage" to "POST /phase4/chrome-devtools/execute with {\"task\": \"<example_task>\"}"
+            )
+        )
+    }
+}

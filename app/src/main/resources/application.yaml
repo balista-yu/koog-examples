@@ -32,6 +32,13 @@ api:
   openweather-base-url: ${API_OPENWEATHER_BASE_URL:https://api.openweathermap.org/data/2.5}
   news-api-base-url: ${API_NEWS_API_BASE_URL:https://newsapi.org/v2}
 
+phase4:
+  llm-model: ${PHASE4_LLM_MODEL:gemini-2.0-flash-001}
+  temperature: ${PHASE4_TEMPERATURE:0.7}
+  chrome-devtools:
+    headless: ${PHASE4_CHROME_HEADLESS:true}
+    startup-timeout: ${PHASE4_CHROME_STARTUP_TIMEOUT:3000}
+
 management:
   endpoints:
     web:
