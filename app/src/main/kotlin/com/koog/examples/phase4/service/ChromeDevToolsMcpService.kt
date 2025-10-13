@@ -1,10 +1,11 @@
-package com.koog.examples.phase4
+package com.koog.examples.phase4.service
 
 import ai.koog.agents.core.agent.AIAgent
 import ai.koog.agents.core.tools.ToolRegistry
 import ai.koog.agents.mcp.McpToolRegistryProvider
 import ai.koog.prompt.executor.clients.google.GoogleModels
 import ai.koog.prompt.executor.llms.all.simpleGoogleAIExecutor
+import com.koog.examples.phase4.config.Phase4Config
 import jakarta.annotation.PostConstruct
 import jakarta.annotation.PreDestroy
 import kotlinx.coroutines.runBlocking
@@ -14,7 +15,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class ChromeDevToolsMcpService(
-    @Value("\${api.google-api-key}") private val googleApiKey: String
+    @Value("\${api.google-api-key}") private val googleApiKey: String,
+    private val config: Phase4Config
 ) {
     private val logger = KotlinLogging.logger {}
     private var mcpProcess: Process? = null
@@ -26,14 +28,15 @@ class ChromeDevToolsMcpService(
         try {
             logger.info { "Starting Chrome DevTools MCP Server..." }
 
+            val headlessFlag = if (config.chromeDevtools.headless) "--headless" else ""
             mcpProcess = ProcessBuilder(
                 "npx", "-y", "chrome-devtools-mcp@latest",
-                "--headless"
+                headlessFlag
             ).apply {
                 redirectError(ProcessBuilder.Redirect.DISCARD)
             }.start()
 
-            Thread.sleep(3000)
+            Thread.sleep(config.chromeDevtools.startupTimeout)
             logger.info { "Connecting to Chrome DevTools MCP Server..." }
 
             try {
@@ -60,31 +63,13 @@ class ChromeDevToolsMcpService(
                     executor = simpleGoogleAIExecutor(googleApiKey),
                     llmModel = GoogleModels.Gemini2_0Flash001,
                     toolRegistry = toolRegistry!!,
-                    systemPrompt = """You are a browser automation and debugging assistant with access to Chrome DevTools MCP tools.
-                        |You can:
-                        |- Navigate web pages and interact with elements
-                        |- Analyze performance and network requests
-                        |- Take screenshots and snapshots
-                        |- Execute JavaScript in the browser context
-                        |- Simulate user interactions (click, fill forms, etc.)
-                        |- Debug console messages and errors
-                        |
-                        |Always provide clear explanations of what you're doing and what you found.
-                        |Respond in Japanese when asked in Japanese.""".trimMargin()
+                    systemPrompt = config.chromeDevtools.systemPrompt
                 )
             } else {
                 AIAgent(
                     executor = simpleGoogleAIExecutor(googleApiKey),
                     llmModel = GoogleModels.Gemini2_0Flash001,
-                    systemPrompt = """You are a browser automation and debugging assistant.
-                        |Note: Chrome DevTools MCP tools are currently unavailable, but you can still help with:
-                        |- Understanding browser automation concepts
-                        |- Explaining how to navigate web pages and interact with elements
-                        |- Describing performance analysis techniques
-                        |- Providing guidance on debugging and testing
-                        |
-                        |Always provide clear explanations and guidance.
-                        |Respond in Japanese when asked in Japanese.""".trimMargin()
+                    systemPrompt = config.chromeDevtools.fallbackSystemPrompt
                 )
             }
             logger.info { "Chrome DevTools service initialized ${if (toolRegistry != null) "with" else "without"} MCP capabilities" }
@@ -108,9 +93,6 @@ class ChromeDevToolsMcpService(
         agent = null
     }
 
-    /**
-     * AIエージェントを使用してタスクを実行
-     */
     fun executeTask(task: String): String {
         if (agent == null) {
             return "Chrome DevTools MCP Server is not available"

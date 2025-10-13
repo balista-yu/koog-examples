@@ -1,5 +1,7 @@
-package com.koog.examples.phase4
+package com.koog.examples.phase4.controller
 
+import com.koog.examples.phase4.dto.TaskRequest
+import com.koog.examples.phase4.service.ChromeDevToolsMcpService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -81,6 +83,4 @@ class ChromeDevToolsMcpController(
             )
         )
     }
-
-    data class TaskRequest(val task: String)
 }
