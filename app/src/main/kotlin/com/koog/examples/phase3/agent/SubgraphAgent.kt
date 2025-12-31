@@ -2,7 +2,6 @@ package com.koog.examples.phase3.agent
 
 import ai.koog.agents.core.agent.AIAgent
 import ai.koog.agents.core.tools.ToolRegistry
-import ai.koog.agents.ext.agent.StringSubgraphResult
 import ai.koog.agents.ext.tool.AskUser
 import ai.koog.agents.ext.tool.SayToUser
 import ai.koog.agents.features.eventHandler.feature.handleEvents
@@ -18,8 +17,12 @@ import org.springframework.stereotype.Component
 import java.util.UUID
 
 /**
+ * サブグラフ結果を表すシンプルなデータクラス
+ */
+data class SubgraphResult(val result: String)
+
+/**
  * Koogのサブグラフ機能を活用したエージェント実装
- * StringSubgraphResultを使用してサブグラフの実行結果を管理
  */
 @Component
 class SubgraphAgent(
@@ -76,9 +79,9 @@ class SubgraphAgent(
 
             return SubgraphResponse(
                 sessionId = sessionId,
-                analysisResult = StringSubgraphResult("Analysis failed: ${e.message}"),
-                processingResult = StringSubgraphResult("Processing failed"),
-                finalResult = StringSubgraphResult("Error: ${e.message}"),
+                analysisResult = SubgraphResult("Analysis failed: ${e.message}"),
+                processingResult = SubgraphResult("Processing failed"),
+                finalResult = SubgraphResult("Error: ${e.message}"),
                 duration = System.currentTimeMillis() - startTime,
                 success = false
             )
@@ -135,7 +138,7 @@ class SubgraphAgent(
     private suspend fun executeAnalysisSubgraph(
         input: String,
         sessionId: String
-    ): StringSubgraphResult {
+    ): SubgraphResult {
         logger.debug { "Executing analysis subgraph for session: $sessionId" }
 
         val agent = createSubgraphAgent("分析タスク: 入力を分析し、主要な要素を特定する")
@@ -152,7 +155,7 @@ class SubgraphAgent(
 
         val result = agent.run(analysisPrompt)
 
-        return StringSubgraphResult(result)
+        return SubgraphResult(result)
     }
 
     /**
@@ -161,7 +164,7 @@ class SubgraphAgent(
     private suspend fun executeProcessingSubgraph(
         analysisResult: String,
         sessionId: String
-    ): StringSubgraphResult {
+    ): SubgraphResult {
         logger.debug { "Executing processing subgraph for session: $sessionId" }
 
         val agent = createSubgraphAgent("処理タスク: 分析結果に基づいて処理を実行")
@@ -178,7 +181,7 @@ class SubgraphAgent(
 
         val result = agent.run(processingPrompt)
 
-        return StringSubgraphResult(result)
+        return SubgraphResult(result)
     }
 
     /**
@@ -187,7 +190,7 @@ class SubgraphAgent(
     private suspend fun executeFinalizationSubgraph(
         processingResult: String,
         sessionId: String
-    ): StringSubgraphResult {
+    ): SubgraphResult {
         logger.debug { "Executing finalization subgraph for session: $sessionId" }
 
         val agent = createSubgraphAgent("最終化タスク: 結果を整形して出力")
@@ -204,7 +207,7 @@ class SubgraphAgent(
 
         val result = agent.run(finalizationPrompt)
 
-        return StringSubgraphResult(result)
+        return SubgraphResult(result)
     }
 
     /**
@@ -214,19 +217,19 @@ class SubgraphAgent(
         task: String,
         taskId: String,
         sessionId: String
-    ): StringSubgraphResult {
+    ): SubgraphResult {
         logger.debug { "Executing task subgraph: $taskId" }
 
         val agent = createSubgraphAgent("タスク実行: $task")
         val result = agent.run(task)
 
-        return StringSubgraphResult(result)
+        return SubgraphResult(result)
     }
 
     /**
      * 結果の集約
      */
-    private fun aggregateResults(results: List<SubgraphTaskResult>): StringSubgraphResult {
+    private fun aggregateResults(results: List<SubgraphTaskResult>): SubgraphResult {
         val aggregated = results.joinToString(separator = "\n\n") { taskResult ->
             """
             タスク ${taskResult.taskIndex + 1}:
@@ -236,7 +239,7 @@ class SubgraphAgent(
             """.trimIndent()
         }
 
-        return StringSubgraphResult(
+        return SubgraphResult(
             """
             === 並列サブグラフ実行結果 ===
             合計タスク数: ${results.size}
@@ -255,15 +258,15 @@ class SubgraphAgent(
     private fun createSubgraphAgent(systemPrompt: String): AIAgent<String, String> {
         return AIAgent(
             llmModel = GoogleModels.Gemini2_0Flash001,
-            executor = executor,
+            promptExecutor = executor,
             systemPrompt = systemPrompt,
             temperature = config.temperature,
             toolRegistry = toolRegistry,
             maxIterations = 5
         ) {
             handleEvents {
-                onToolCall { eventContext ->
-                    logger.trace { "Subgraph tool call: ${eventContext.tool.name}" }
+                onToolCallStarting { eventContext ->
+                    logger.trace { "Subgraph tool call (id: ${eventContext.toolCallId ?: "unknown"})" }
                 }
             }
         }
@@ -272,9 +275,9 @@ class SubgraphAgent(
 
 data class SubgraphResponse(
     val sessionId: String,
-    val analysisResult: StringSubgraphResult,
-    val processingResult: StringSubgraphResult,
-    val finalResult: StringSubgraphResult,
+    val analysisResult: SubgraphResult,
+    val processingResult: SubgraphResult,
+    val finalResult: SubgraphResult,
     val duration: Long,
     val success: Boolean
 )
@@ -283,7 +286,7 @@ data class ParallelSubgraphResponse(
     val sessionId: String,
     val totalTasks: Int,
     val taskResults: List<SubgraphTaskResult>,
-    val aggregatedResult: StringSubgraphResult,
+    val aggregatedResult: SubgraphResult,
     val totalDuration: Long,
     val success: Boolean
 )
@@ -292,6 +295,6 @@ data class SubgraphTaskResult(
     val taskId: String,
     val taskIndex: Int,
     val task: String,
-    val result: StringSubgraphResult,
+    val result: SubgraphResult,
     val duration: Long
 )

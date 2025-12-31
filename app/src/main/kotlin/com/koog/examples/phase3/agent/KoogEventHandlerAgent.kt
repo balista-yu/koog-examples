@@ -63,14 +63,14 @@ class KoogEventHandlerAgent(
 
             val agent = AIAgent(
                 llmModel = GoogleModels.Gemini2_0Flash001,
-                executor = executor,
+                promptExecutor = executor,
                 systemPrompt = config.systemPrompt,
                 temperature = config.temperature,
                 toolRegistry = toolRegistry,
                 maxIterations = config.maxIterations
             ) {
                 handleEvents {
-                    onToolCall { eventContext ->
+                    onToolCallStarting { eventContext ->
                         toolCallCount++
 
                         events.add(
@@ -78,8 +78,7 @@ class KoogEventHandlerAgent(
                                 LocalDateTime.now(),
                                 EventType.TOOL_CALL,
                                 mapOf(
-                                    "toolName" to eventContext.tool.name,
-                                    "toolDescription" to eventContext.tool.descriptor.description,
+                                    "toolCallId" to (eventContext.toolCallId ?: "unknown"),
                                     "arguments" to eventContext.toolArgs.toString(),
                                     "callNumber" to toolCallCount
                                 ),
@@ -88,12 +87,12 @@ class KoogEventHandlerAgent(
                         )
 
                         logger.info {
-                            "🔧 Tool #$toolCallCount: ${eventContext.tool.name} " +
+                            "🔧 Tool #$toolCallCount (id: ${eventContext.toolCallId ?: "unknown"}) " +
                                 "with args: ${eventContext.toolArgs}"
                         }
                     }
 
-                    onAgentFinished { eventContext ->
+                    onAgentCompleted { eventContext ->
                         metrics["totalToolCalls"] = toolCallCount
                         metrics["totalLLMCalls"] = llmCallCount
                         metrics["finalResult"] = eventContext.result.toString()
@@ -161,14 +160,14 @@ class KoogEventHandlerAgent(
 
                     val agent = AIAgent(
                         llmModel = GoogleModels.Gemini2_0Flash001,
-                        executor = executor,
+                        promptExecutor = executor,
                         systemPrompt = config.systemPrompt,
                         temperature = config.temperature,
                         toolRegistry = toolRegistry,
                         maxIterations = config.maxIterations
                     ) {
                         handleEvents {
-                            onToolCall { eventContext ->
+                            onToolCallStarting { eventContext ->
                                 taskToolCalls++
                                 synchronized(allEvents) {
                                     allEvents.add(
@@ -178,7 +177,7 @@ class KoogEventHandlerAgent(
                                             mapOf(
                                                 "taskId" to taskId,
                                                 "taskIndex" to index,
-                                                "tool" to eventContext.tool.name,
+                                                "toolCallId" to (eventContext.toolCallId ?: "unknown"),
                                                 "args" to eventContext.toolArgs.toString()
                                             ),
                                             sessionId

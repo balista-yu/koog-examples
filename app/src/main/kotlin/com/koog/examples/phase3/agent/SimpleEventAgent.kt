@@ -45,20 +45,20 @@ class SimpleEventAgent(
 
             val agent = AIAgent(
                 llmModel = GoogleModels.Gemini2_0Flash001,
-                executor = executor,
+                promptExecutor = executor,
                 systemPrompt = config.systemPrompt,
                 temperature = config.temperature,
                 toolRegistry = toolRegistry,
                 maxIterations = config.maxIterations
             ) {
                 handleEvents {
-                    onToolCall { eventContext ->
-                        val eventMsg = "${LocalDateTime.now()}: Tool called: ${eventContext.tool.name}"
+                    onToolCallStarting { eventContext ->
+                        val eventMsg = "${LocalDateTime.now()}: Tool call started (id: ${eventContext.toolCallId ?: "unknown"})"
                         events.add(eventMsg)
                         logger.info { eventMsg }
                     }
 
-                    onAgentFinished { _ ->
+                    onAgentCompleted { _ ->
                         val eventMsg = "${LocalDateTime.now()}: Agent finished"
                         events.add(eventMsg)
                         logger.info { eventMsg }
