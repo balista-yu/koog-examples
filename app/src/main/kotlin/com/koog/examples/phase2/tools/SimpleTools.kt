@@ -1,52 +1,36 @@
 package com.koog.examples.phase2.tools
 
-import ai.koog.agents.core.tools.SimpleTool
-import ai.koog.agents.core.tools.ToolArgs
-import ai.koog.agents.core.tools.ToolDescriptor
-import ai.koog.agents.core.tools.ToolParameterDescriptor
-import ai.koog.agents.core.tools.ToolParameterType
-import kotlinx.serialization.Serializable
+import ai.koog.agents.core.tools.annotations.LLMDescription
+import ai.koog.agents.core.tools.annotations.Tool
+import ai.koog.agents.core.tools.reflect.ToolSet
+import org.springframework.stereotype.Component
 import java.util.UUID
 
-object UUIDGeneratorTool : SimpleTool<UUIDGeneratorTool.Args>() {
-    @Serializable
-    data class Args(
-        val count: Int = 1,
-        val format: String = "standard"
-    ) : ToolArgs
+/**
+ * UUIDを生成するシンプルなツール（アノテーションベース）
+ */
+@Component
+@LLMDescription("UUID生成ツール")
+class UUIDGeneratorToolSet : ToolSet {
 
-    override val argsSerializer = kotlinx.serialization.serializer<Args>()
-
-    override val descriptor = ToolDescriptor(
-        name = "uuid_generator",
-        description = "UUID（Universally Unique Identifier）を生成します",
-        optionalParameters = listOf(
-            ToolParameterDescriptor(
-                name = "count",
-                description = "生成するUUIDの個数（1-10、デフォルト: 1）",
-                type = ToolParameterType.Integer
-            ),
-            ToolParameterDescriptor(
-                name = "format",
-                description = "UUIDのフォーマット（standard, compact, uppercase）",
-                type = ToolParameterType.String
-            )
-        )
-    )
-
-    override suspend fun doExecute(args: Args): String {
+    @Tool
+    @LLMDescription("UUID（Universally Unique Identifier）を生成します")
+    fun generateUUID(
+        @LLMDescription("生成するUUIDの個数（1-10、デフォルト: 1）") count: Int = 1,
+        @LLMDescription("UUIDのフォーマット（standard, compact, uppercase）") format: String = "standard"
+    ): String {
         return try {
-            val count = args.count.coerceIn(1, 10)
+            val actualCount = count.coerceIn(1, 10)
 
-            val uuids = List(count) {
+            val uuids = List(actualCount) {
                 val uuid = UUID.randomUUID().toString()
-                formatUUID(uuid, args.format)
+                formatUUID(uuid, format)
             }
 
             buildString {
                 appendLine("【UUID生成結果】")
-                appendLine("生成数: $count")
-                appendLine("フォーマット: ${args.format}")
+                appendLine("生成数: $actualCount")
+                appendLine("フォーマット: $format")
                 appendLine()
                 uuids.forEachIndexed { index, uuid ->
                     appendLine("${index + 1}. $uuid")

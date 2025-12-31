@@ -22,7 +22,7 @@ class HelloWorldAgent(
 
         // AIエージェントの作成
         val agent = AIAgent(
-            executor = simpleGoogleAIExecutor(googleApiKey),
+            promptExecutor = simpleGoogleAIExecutor(googleApiKey),
             systemPrompt = config.systemPrompt,
             llmModel = config.llmModel
         )

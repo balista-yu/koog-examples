@@ -3,6 +3,7 @@ package com.koog.examples.phase4.service
 import ai.koog.agents.core.agent.AIAgent
 import ai.koog.agents.core.tools.ToolRegistry
 import ai.koog.agents.mcp.McpToolRegistryProvider
+import ai.koog.agents.mcp.defaultStdioTransport
 import ai.koog.prompt.executor.clients.google.GoogleModels
 import ai.koog.prompt.executor.llms.all.simpleGoogleAIExecutor
 import com.koog.examples.phase4.config.Phase4Config
@@ -60,14 +61,14 @@ class ChromeDevToolsMcpService(
         try {
             agent = if (toolRegistry != null) {
                 AIAgent(
-                    executor = simpleGoogleAIExecutor(googleApiKey),
+                    promptExecutor = simpleGoogleAIExecutor(googleApiKey),
                     llmModel = GoogleModels.Gemini2_0Flash001,
                     toolRegistry = toolRegistry!!,
                     systemPrompt = config.chromeDevtools.systemPrompt
                 )
             } else {
                 AIAgent(
-                    executor = simpleGoogleAIExecutor(googleApiKey),
+                    promptExecutor = simpleGoogleAIExecutor(googleApiKey),
                     llmModel = GoogleModels.Gemini2_0Flash001,
                     systemPrompt = config.chromeDevtools.fallbackSystemPrompt
                 )

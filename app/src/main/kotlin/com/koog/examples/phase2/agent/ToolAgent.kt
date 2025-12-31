@@ -19,32 +19,34 @@ class ToolAgent(
     private val config: Phase2Config,
     private val weatherTools: WeatherTools,
     private val newsTools: NewsTools,
+    private val uuidGeneratorToolSet: UUIDGeneratorToolSet,
+    private val base64EncoderToolSet: Base64EncoderToolSet,
     @param:Value("\${api.google-api-key}")
     private val googleApiKey: String,
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     // ToolRegistryを作成してツールを登録
-    private val toolRegistry = ToolRegistry {
-        // ビルトインツール
-        tool(AskUser)
-        tool(SayToUser)
+    private val toolRegistry by lazy {
+        ToolRegistry {
+            // ビルトインツール
+            tool(AskUser)
+            tool(SayToUser)
 
-        // カスタムツール（反射ベースのツールセット）
-        tools(weatherTools.asTools())
-        tools(newsTools.asTools())
-        
-        // SimpleToolベースのツール
-        tool(UUIDGeneratorTool)
-        
-        // Toolクラスベースのツール
-        tool(Base64EncoderTool)
+            // カスタムツール（反射ベースのツールセット）
+            tools(weatherTools.asTools())
+            tools(newsTools.asTools())
+
+            // アノテーションベースのツールセット
+            tools(uuidGeneratorToolSet.asTools())
+            tools(base64EncoderToolSet.asTools())
+        }
     }
 
     // ToolRegistryを使用してAIAgentを作成
     private fun createAgent() = AIAgent(
         llmModel = config.llmModel,
-        executor = simpleGoogleAIExecutor(googleApiKey),
+        promptExecutor = simpleGoogleAIExecutor(googleApiKey),
         systemPrompt = config.systemPrompt,
         temperature = config.temperature,
         toolRegistry = toolRegistry,
