@@ -75,3 +75,7 @@ Thumbs.db
 
 .mcp.json
 CLAUDE.md
+
+# custom
+*.override.yaml
+*.override.yml
