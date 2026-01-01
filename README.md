@@ -4,9 +4,9 @@ KoogフレームワークのSpring Boot統合サンプル集
 
 ## 🛠️ 技術構成
 
-- **フレームワーク**: Spring Boot 3.5.3
-- **言語**: Kotlin 2.1.21
-- **AIライブラリ**: Koog Agents 0.4.1
+- **フレームワーク**: Spring Boot 3.5.8
+- **言語**: Kotlin 2.2.21
+- **AIライブラリ**: Koog Agents 0.6.0
 - **LLMプロバイダー**: Google AI (Gemini 2.0 Flash)
 - **ビルドツール**: Gradle 8.12.1
 - **コンテナ**: Docker + Docker Compose
@@ -22,7 +22,8 @@ koog-examples/
 │   │   ├── phase1/               # 基本的なKoogエージェント
 │   │   ├── phase2/               # ツール開発・統合
 │   │   ├── phase3/               # エージェント戦略（未実装）
-│   │   └── phase4/               # MCP統合（Apidog）
+│   │   ├── phase4/               # MCP統合（Apidog）
+│   │   └── phase5/               # Ollama統合
 │   └── src/main/resources/
 │       └── application.yaml      # Spring設定
 ├── compose.yaml                  # Docker Compose設定
@@ -55,6 +56,7 @@ cp .env.example .env
 - `NEWS_API_KEY` - News APIキー（Phase2用）
 - `APIDOG_ACCESS_TOKEN` - Apidog アクセストークン（Phase4用）
 - `APIDOG_PROJECT_ID` - Apidog プロジェクトID（Phase4用）
+- `OLLAMA_BASE_URL` - Ollama エンドポイント
 
 ### 4. 起動
 ```bash
