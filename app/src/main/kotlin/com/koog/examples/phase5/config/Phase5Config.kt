@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 @ConfigurationProperties(prefix = "phase5")
 data class Phase5Config(
-    var model: String = "llama3-groq-tool-use:8b",
+    var model: String = "qwen3:0.6b",
     var systemPrompt: String = "あなたは親切なアシスタントです。ユーザーの質問に対して正確かつ簡潔に日本語で回答してください。",
     var temperature: Double = 0.7,
     var maxIterations: Int = 10

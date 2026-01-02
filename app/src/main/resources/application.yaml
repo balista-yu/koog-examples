@@ -40,7 +40,7 @@ phase4:
     startup-timeout: ${PHASE4_CHROME_STARTUP_TIMEOUT:3000}
 
 phase5:
-  model: ${PHASE5_MODEL:llama3-groq-tool-use:8b}
+  model: ${PHASE5_MODEL:qwen3:0.6b}
   system-prompt: ${PHASE5_SYSTEM_PROMPT:あなたは親切なアシスタントです。ユーザーの質問に対して正確かつ簡潔に日本語で回答してください。}
   temperature: ${PHASE5_TEMPERATURE:0.7}
   max-iterations: ${PHASE5_MAX_ITERATIONS:10}
