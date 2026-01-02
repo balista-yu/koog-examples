@@ -27,7 +27,7 @@ class OllamaController(
                 OllamaResponse(
                     message = request.message,
                     response = response,
-                    model = config.model,
+                    model = config.llmModel.id,
                     success = true
                 )
             )
@@ -37,7 +37,7 @@ class OllamaController(
                 OllamaResponse(
                     message = request.message,
                     response = "エラーが発生しました: ${e.message}",
-                    model = config.model,
+                    model = config.llmModel.id,
                     success = false
                 )
             )
@@ -49,8 +49,7 @@ class OllamaController(
         return ResponseEntity.ok(
             mapOf(
                 "phase" to "Phase 5: Ollama Integration",
-                "model" to config.model,
-                "temperature" to config.temperature,
+                "model" to config.llmModel.id,
                 "maxIterations" to config.maxIterations,
                 "endpoints" to mapOf(
                     "POST /api/phase5/ollama/chat" to "Chat with Ollama model"
